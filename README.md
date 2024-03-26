@@ -6,7 +6,9 @@ Need install following packages using pip install
 *google-api-python-client
 *Stramlit
 
-After Install above packages run streamlit run home.py
+create new folder in project page and move 1_database.py and 1_question.py into pages folder
+
+After complete above steps run streamlit run home.py
 
 search using id or channel name.
 
