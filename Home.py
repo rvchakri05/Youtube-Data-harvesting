@@ -49,7 +49,7 @@ def reset():
     sl.session_state["cm"]=""
     sl.session_state["vd1"]=""
     sl.session_state["vd2"]=""
-    sl.sessionstate["pub"]=""
+    sl.session_state["pub"]=""
 rr=sl.text_input("Enter Channel ID or Channel Name")
 sl.session_state["CHANNEL_ID"]=rr
 cid=sl.session_state["CHANNEL_ID"]
@@ -70,8 +70,7 @@ if search:
         if len(channel_data1["c_name"])!=0:
             sl.session_state["vd"]=youtube.video_data1
             sl.session_state["cd"]=youtube.channel_data1
-            sl.session_state["cm"]=youtube.comment_data1
-            sl.write(sl.session_state["cd"]["id"][0])
+            sl.session_state["cm"]=youtube.comment_data1    
             name_of_the_channel=sl.session_state["cd"]["c_name"][0]
             sl.session_state["name_of_the_channel"]=(f'<h1 style="color:#FB2604;"> {name_of_the_channel}</h1>').upper()
             subcriber=sl.session_state["cd"]["c_subscriber"][0]
@@ -90,8 +89,6 @@ if search:
             sl.session_state["lk2"]=df1.iloc[1]["like_count"]
             sl.session_state["vc1"]=df1.iloc[0]["view_count"]
             sl.session_state["vc2"]=df1.iloc[1]["view_count"]
-            video_count=len(sl.session_state["vd"])
-            sl.write(video_count)
             sl.session_state["pub"]=f'<i class="fa-solid fa-bullhorn fa-shake" style="color: #f70808;"></i>{(sl.session_state["cd"]["c_publish"][0])}'
             
         else:
@@ -102,7 +99,8 @@ if p_database:
     if not hasattr(youtube,'video_data1'):
         sl.warning("No data availble please search")
     else:
-        id_exist(youtube.CHANNEL_ID)
+        id_exist(sl.session_state["CHANNEL_ID"])
+        reset()
        
                       
 sl.write(sl.session_state["name_of_the_channel"],unsafe_allow_html=True)
