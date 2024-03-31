@@ -1,21 +1,19 @@
 from collections import defaultdict
 from datetime import datetime
-from sqlalchemy import create_engine
 import pandas as pd
 import googleapiclient.discovery
+import threading
+from threading import *
 
 #assign database information
-host="Enter Address"
-user="Enter User"
-password="Enter Password"
+host="Enter databse host address"
+user="user name"
+password="password"
 database_name="youtube_harvest"
-port="Enter Port number"
-CHANNEL_ID = ""
-youtube1=googleapiclient.discovery.build("youtube", "v3", developerKey="Enter API KEY")
+port=Port name
+youtube1=googleapiclient.discovery.build("youtube", "v3", developerKey="Enter Youtube API developer Key")
 video_id=defaultdict(list)
 channel_data1=defaultdict(list)
-engine=create_engine(url="mysql+mysqlconnector://{0}:{1}@{2}:{3}/{4}".format(
-            user, password, host, port, database_name))
 tb_name=["channel_data","video_data","comment_data"]
 global video_data1,comment_data1
 #function for video duration convert to time format
@@ -40,17 +38,16 @@ def input_find(channel_id):
                             ).execute()
     if len(channel_id)==24 and all(c in '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_' for c in channel_id):
         if "items" in channelid:
-            data_channel(channel_id)
+            thread(channel_id)
         elif len(channelname["items"])!=0:
             chan_id1=channelname["items"][0]["snippet"]["channelId"]
-            data_channel(chan_id1)
+            thread(chan_id1)
     elif len(channelname["items"])!=0:
         chan_id2=channelname["items"][0]["snippet"]["channelId"]
-        data_channel(chan_id2)
+        thread(chan_id2)
 
 #Function for get channel information               
 def data_channel(d_channel_id):
-    CHANNEL_ID=d_channel_id
     channelid = youtube1.channels().list(
         part="snippet,contentDetails,statistics",
         id=d_channel_id).execute()
@@ -138,8 +135,15 @@ def data_comments(id_video):
     for c in range(0,len(comments["items"])):
         comment_data1["id"].append(comments['items'][c]['id'])
         comment_data1["v_id"].append(id_video)
+        comment_data1["c_id"].append(comments['items'][c]['snippet']['channelId'])
         comment_data1["comment_text"].append(comments['items'][c]['snippet']['topLevelComment']['snippet']['textOriginal'])
         comment_data1["comment_author"].append(comments['items'][c]['snippet']['topLevelComment']['snippet']['authorDisplayName'])
         comment_data1["comment_published"].append(date(comments['items'][c]['snippet']['topLevelComment']['snippet']['publishedAt']))
-
-
+def thread(c_id):
+    th1=threading.Thread(target=data_channel(c_id))
+    th2=threading.Thread(target=video_list(c_id))
+    th1.start
+    th2.start
+    th1.join
+    th2.join
+    
